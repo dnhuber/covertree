@@ -19,6 +19,7 @@
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.HashSet;
 
 public class CoverTree<E> {
 	
@@ -420,6 +421,54 @@ public class CoverTree<E> {
 			sumSq += d*d;
 		}
 		return sumSq;
+	}
+	//get get all children of a node(no value twice!)--Daniel Huber
+	public List<E> getCoverChildren(Node<E> node){
+
+		List<Node<E>> allChildren = new LinkedList<Node<E>>();
+		Node<E> baseNode =node;
+
+		while(baseNode.parent!=node){		//make sure traversal does not go above baseNode
+			while(!node.children.isEmpty()&&!allChildren.containsAll(node.children)){	//depth-first search for leaf node
+				for(int i=0;i<node.children.size();i++){	//go through all children of a node
+					if(!allChildren.contains(node.children.get(i))){	//only go down nodes that are not part of allChildren yet
+						node=node.children.get(i);	//go to lower level
+						break; //break out of for loop
+					}
+				}
+
+			}
+			allChildren.add(node);
+			node=node.parent;
+		}	
+		//delete double values from allChildren
+			HashSet<Node<E>> help = new HashSet<Node<E>>();
+			for(Node<E> n:allChildren){
+				for(Node<E> n2:allChildren){
+					if(n.element.equals(n2.element)&&!n.equals(n2)&&!help.contains(n)){
+						help.add(n2);
+					}
+				}
+			}
+			for(Node<E> n:help){
+				allChildren.remove(n);
+			
+			}
+
+
+		List<E> children = new LinkedList<E>();
+		for (Node<E> n: allChildren) {
+			children.add(n.element);
+		}
+		return children;
+	}	
+	//get level of a node--Daniel Huber
+	public int getLevel(Node<E> node){
+		int i=0;
+		while(!node.parent.equals(this.rootNode.parent)){
+			i++;
+		}
+		return this.maxLevel-i;
 	}
 	
 	@SuppressWarnings("hiding")
