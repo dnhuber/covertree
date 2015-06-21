@@ -471,15 +471,13 @@ public class CoverTree<E> {
 	by Daniel Huber*/
 	public HashSet<Node<E>> fastChildren(Node<E> node){
 		HashSet<Node<E>> children = new HashSet<Node<E>>();
-		if (node.children.isEmpty()){//check if node is leaf node
-			children.add(node);//add leaf node to hashset
+		if (node.children.isEmpty()){
+			children.add(node);
 		}
-		else{
-		
-			for(Node<E> n: node.children){
-				children.addAll(fastChildren(n));//add list of all points in lower level to upper level
-			}
-		
+		else{		
+			node.children.parallelStream()//use parallelStream for speedup
+				.forEach((n->children.addAll(fastChildren(n))));//loop
+					
 		}
 		
 		return children;
