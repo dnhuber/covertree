@@ -462,6 +462,29 @@ public class CoverTree<E> {
 		}
 		return children;
 	}	
+	
+	/*get a HashSet of all leaf nodes of the tree. As a parent 
+	does always have a child with the same value, all values beneath that node are returned.
+	Recursive functon and therefore very fast. 
+	Imagine a chocolate fountain where the chocolate drips down in more and more bowls with every level.
+	As a HashSet can only contain objects and not double arrays, the nodes are added.
+	by Daniel Huber*/
+	public HashSet<Node<E>> fastChildren(Node<E> node){
+		HashSet<Node<E>> children = new HashSet<Node<E>>();
+		if (node.children.isEmpty()){//check if node is leaf node
+			children.add(node);//add leaf node to hashset
+		}
+		else{
+		
+			for(Node<E> n: node.children){
+				children.addAll(fastChildren(n));//add list of all points in lower level to upper level
+			}
+		
+		}
+		
+		return children;
+	}
+
 	//get level of a node--Daniel Huber
 	public int getLevel(Node<E> node){
 		int i=0;
