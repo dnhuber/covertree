@@ -482,6 +482,24 @@ public class CoverTree<E> {
 		
 		return children;
 	}
+	public HashSet<Node<E>> lazyFastChildren(Node<E> node){
+		HashSet<Node<E>> children = new HashSet<Node<E>>();
+		helpLazyFastChildren(node,children);
+		
+		return children;
+	}
+	
+	private void helpLazyFastChildren(Node<E> node, HashSet<Node<E>> children){
+		if (node.children.isEmpty()){
+			children.add(node);
+		}
+		else{		
+			node.children.parallelStream()
+				.forEach(n->helpLazyFastChildren(n,children));
+					
+		}
+		return;
+	}
 
 	//get level of a node--Daniel Huber
 	public int getLevel(Node<E> node){
