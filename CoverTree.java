@@ -467,23 +467,21 @@ public class CoverTree<E> {
 	does always have a child with the same value, all values beneath that node are returned.
 	Recursive functon and therefore very fast. 
 	Imagine a chocolate fountain where the chocolate drips down in more and more bowls with every level.
-	As a ConcurentHashSet can only contain objects and not double arrays, the nodes are added. A ConcurrentHashSet is Thread-save
+	As a HashSet can only contain objects and not double arrays, the nodes are added. 
 	by Daniel Huber*/
-	//get all childnodes in tree of node using a pointer and a ConcurrentHashSet
-	public Set<Node<E>> fastChildren(Node<E> node){
-		Set<Node<E>> children = Collections.newSetFromMap( new ConcurrentHashMap<Node<E>, Boolean>());//Create ConcurrentHashSet (not defined explicitly in Java)
+	//get all childnodes in tree of node using a pointer 
+	public HashSet<Node<E>> fastChildren(Node<E> node){
+		HashSet<Node<E>> children = HashSet<Node<E>>();
 		helpFastChildren(node,children);
-		System.out.println("hi"+children.size());
 		return children;
 	}
 	
-	private void helpFastChildren(Node<E> node, Set<Node<E>> children){
+	private void helpFastChildren(Node<E> node, HashSet<Node<E>> children){
 		if (node.children.isEmpty()){
 			children.add(node);
 		}
 		else{		
-			node.children.parallelStream()//parallelization of recursive exploration of the tree
-				.forEach(n->helpFastChildren(n,children));
+			node.children.forEach(n->helpFastChildren(n,children));
 					
 		}
 		return;
