@@ -467,39 +467,28 @@ public class CoverTree<E> {
 	does always have a child with the same value, all values beneath that node are returned.
 	Recursive functon and therefore very fast. 
 	Imagine a chocolate fountain where the chocolate drips down in more and more bowls with every level.
-	As a HashSet can only contain objects and not double arrays, the nodes are added.
+	As a ConcurentHashSet can only contain objects and not double arrays, the nodes are added. A ConcurrentHashSet is Thread-save
 	by Daniel Huber*/
-	public HashSet<Node<E>> fastChildren(Node<E> node){
-		HashSet<Node<E>> children = new HashSet<Node<E>>();
-		if (node.children.isEmpty()){
-			children.add(node);
-		}
-		else{		
-			node.children.parallelStream()//use parallelStream for speedup
-				.forEach((n->children.addAll(fastChildren(n))));//loop
-					
-		}
-		
-		return children;
-	}
-	public HashSet<Node<E>> lazyFastChildren(Node<E> node){
-		HashSet<Node<E>> children = new HashSet<Node<E>>();
-		helpLazyFastChildren(node,children);
-		
+	//get all childnodes in tree of node using a pointer and a ConcurrentHashSet
+	public Set<Node<E>> fastChildren(Node<E> node){
+		Set<Node<E>> children = Collections.newSetFromMap( new ConcurrentHashMap<Node<E>, Boolean>());//Create ConcurrentHashSet (not defined explicitly in Java)
+		helpFastChildren(node,children);
+		System.out.println("hi"+children.size());
 		return children;
 	}
 	
-	private void helpLazyFastChildren(Node<E> node, HashSet<Node<E>> children){
+	private void helpFastChildren(Node<E> node, Set<Node<E>> children){
 		if (node.children.isEmpty()){
 			children.add(node);
 		}
 		else{		
-			node.children.parallelStream()
-				.forEach(n->helpLazyFastChildren(n,children));
+			node.children.parallelStream()//parallelization of recursive exploration of the tree
+				.forEach(n->helpFastChildren(n,children));
 					
 		}
 		return;
 	}
+
 
 	//get level of a node--Daniel Huber
 	public int getLevel(Node<E> node){
